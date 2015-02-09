@@ -9,7 +9,7 @@ def setup_routing():
     bottle.route('/account', 'POST', post_account)
 
     bottle.route('/import', 'GET', get_import)
-    bottle.route(
+    bottle.route('/import', 'POST', post_import)
 
 #EVAL PAGE
 def get_eval():
