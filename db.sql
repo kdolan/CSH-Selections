@@ -3,18 +3,12 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 09, 2015 at 08:13 PM
+-- Generation Time: Feb 09, 2015 at 08:29 PM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `selections`
@@ -27,7 +21,7 @@ DELIMITER $$
 -- Procedures
 --
 CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_applicant`(IN `p_applicant_id` VARCHAR(25), IN `p_application_html` VARCHAR(5000))
-INSERT INTO score
+INSERT INTO applicant
          (
 			   applicant_id,
                application_html
@@ -38,19 +32,19 @@ INSERT INTO score
            p_application_html
          )$$
 
-CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_criteria`(IN `p_critera_name` VARCHAR(100), IN `p_critera_description` VARCHAR(250), IN `p_min_score` DECIMAL(10,4), IN `p_max_score` DECIMAL(10,4), IN `p_weight` DECIMAL(10,4))
-INSERT INTO score
+CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_criteria`(IN `p_criteria_name` VARCHAR(100), IN `p_criteria_description` VARCHAR(250), IN `p_min_score` DECIMAL(10,4), IN `p_max_score` DECIMAL(10,4), IN `p_weight` DECIMAL(10,4))
+INSERT INTO criteria
          (
-			   critera_name,
-               critera_description,
+			   criteria_name,
+               criteria_description,
                min_score,
                max_score,
                weight
          )
     VALUES 
          ( 
-           p_critera_name,
-           p_critera_description,
+           p_criteria_name,
+           p_criteria_description,
            p_min_score,
            p_max_score,
            p_weight
@@ -60,7 +54,7 @@ CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_score`(IN `p_criteriaId` INT
 INSERT INTO score
          (
 			   applicant,
-               applicant,
+               reviewer,
                score
          )
     VALUES 
@@ -96,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `applicant` (
   `application_html` varchar(5000) DEFAULT NULL,
   PRIMARY KEY (`key`),
   UNIQUE KEY `applicant_id` (`applicant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -106,14 +100,14 @@ CREATE TABLE IF NOT EXISTS `applicant` (
 
 CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `critera_name` varchar(100) NOT NULL,
-  `critera_description` varchar(250) NOT NULL,
+  `criteria_name` varchar(100) NOT NULL,
+  `criteria_description` varchar(250) NOT NULL,
   `min_score` decimal(10,4) NOT NULL,
   `max_score` decimal(10,4) NOT NULL,
   `weight` decimal(10,4) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `critera_name` (`critera_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  UNIQUE KEY `critera_name` (`criteria_name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -129,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `score` (
   PRIMARY KEY (`id`),
   KEY `applicant` (`applicant`),
   KEY `reviewer` (`reviewer`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -155,7 +149,3 @@ CREATE TABLE IF NOT EXISTS `user` (
 ALTER TABLE `score`
   ADD CONSTRAINT `fk_user` FOREIGN KEY (`reviewer`) REFERENCES `user` (`id`),
   ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`key`);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
