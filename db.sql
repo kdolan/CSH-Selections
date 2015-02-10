@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 09, 2015 at 08:29 PM
+-- Generation Time: Feb 09, 2015 at 09:59 PM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.5
 
@@ -20,6 +20,23 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_applicantAverage`(IN p_applicantID varchar(25))
+SELECT * FROM SCORE
+#Selects an decimal that is the applicants average score accross all criteria$$
+
+CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_applicantCriteriaAverage`(IN `p_applicantID` VARCHAR(25), IN `p_criteriaId` INT)
+SELECT * FROM  `score` 
+#Selects an decimal that is the applicants average score for the specified criteria$$
+
+CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_criteria`()
+SELECT  `id` ,  `criteria_name` ,  `criteria_description` ,  `min_score` ,  `max_score` ,  `weight` ,  `disabled` 
+FROM  `selections`.`criteria` 
+WHERE disabled!=1$$
+
+CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_overallCriteriaAverage`(IN p_criteriaId INT)
+SELECT * FROM SCORE
+#Selects an decimal that is the overall average score for the specified criteria$$
+
 CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_applicant`(IN `p_applicant_id` VARCHAR(25), IN `p_application_html` VARCHAR(5000))
 INSERT INTO applicant
          (
@@ -105,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `criteria` (
   `min_score` decimal(10,4) NOT NULL,
   `max_score` decimal(10,4) NOT NULL,
   `weight` decimal(10,4) NOT NULL,
+  `disabled` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `critera_name` (`criteria_name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
