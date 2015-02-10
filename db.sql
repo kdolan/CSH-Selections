@@ -3,21 +3,73 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 09, 2015 at 07:50 PM
+-- Generation Time: Feb 09, 2015 at 08:13 PM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.5
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
 --
 -- Database: `selections`
 --
+CREATE DATABASE IF NOT EXISTS `selections` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `selections`;
 
 DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_applicant`(IN `p_applicant_id` VARCHAR(25), IN `p_application_html` VARCHAR(5000))
+INSERT INTO score
+         (
+			   applicant_id,
+               application_html
+         )
+    VALUES 
+         ( 
+           p_applicant_id,
+           p_application_html
+         )$$
+
+CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_criteria`(IN `p_critera_name` VARCHAR(100), IN `p_critera_description` VARCHAR(250), IN `p_min_score` DECIMAL(10,4), IN `p_max_score` DECIMAL(10,4), IN `p_weight` DECIMAL(10,4))
+INSERT INTO score
+         (
+			   critera_name,
+               critera_description,
+               min_score,
+               max_score,
+               weight
+         )
+    VALUES 
+         ( 
+           p_critera_name,
+           p_critera_description,
+           p_min_score,
+           p_max_score,
+           p_weight
+         )$$
+
+CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_score`(IN `p_criteriaId` INT, IN `p_reviewerId` INT, IN `p_applicantId` INT)
+INSERT INTO score
+         (
+			   applicant,
+               applicant,
+               score
+         )
+    VALUES 
+         ( 
+           p_criteriaId,
+           p_reviewerId,
+           p_applicantId
+         )$$
+
 CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_user`(IN `p_username` VARCHAR(25), IN `p_password` VARCHAR(32))
 INSERT INTO user
          (
@@ -41,7 +93,7 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `applicant` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
   `applicant_id` varchar(25) NOT NULL,
-  `application_placeholder` int(11) DEFAULT NULL,
+  `application_html` varchar(5000) DEFAULT NULL,
   PRIMARY KEY (`key`),
   UNIQUE KEY `applicant_id` (`applicant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
@@ -49,17 +101,18 @@ CREATE TABLE IF NOT EXISTS `applicant` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rubric`
+-- Table structure for table `criteria`
 --
 
-CREATE TABLE IF NOT EXISTS `rubric` (
+CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `critera_name` varchar(100) NOT NULL,
   `critera_description` varchar(250) NOT NULL,
   `min_score` decimal(10,4) NOT NULL,
   `max_score` decimal(10,4) NOT NULL,
   `weight` decimal(10,4) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `critera_name` (`critera_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -102,3 +155,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 ALTER TABLE `score`
   ADD CONSTRAINT `fk_user` FOREIGN KEY (`reviewer`) REFERENCES `user` (`id`),
   ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`key`);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
