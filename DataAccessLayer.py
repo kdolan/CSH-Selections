@@ -15,6 +15,18 @@ class DAL(object):
         args = [username, str(password_hash)]
         self.usp_exec('spInsert_user', args)
 
+    def insert_score(self, criteria_id, reviewer_id, applicant_id):
+        args = [criteria_id, reviewer_id, applicant_id]
+        self.usp_exec('spInsert_score', args)
+
+    def insert_criteria(self, name, description, min_score, max_score, weight):
+        args = [name, descriotion, min_score, max_score, weight]
+        self.usp_exec('spInsert_criteria', args)
+
+    def insert_applicant(self, applicant_id, application_html):
+        args = [applicant_id, applicantion_html]
+        self.usp_exec('spInsert_applicant', args)
+
     def usp_exec(self, usp_name, args):
         self.cursor.callproc(usp_name, args)
         self.db.commit()
