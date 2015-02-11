@@ -12,8 +12,9 @@ class DAL(object):
         m = hashlib.md5()
         m.update(password)
         password_hash = m.hexdigest()
-        #exec_str = "CALL `spInsert_user` ('{0}', '{1}');".format(username, password_hash)
-        #print(exec_str)
         args = [username, str(password_hash)]
-        self.cursor.callproc('spInsert_user', args)
+        self.usp_exec('spInsert_user', args)
+
+    def usp_exec(self, usp_name, args):
+        self.cursor.callproc(usp_name, args)
         self.db.commit()
