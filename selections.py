@@ -1,5 +1,9 @@
 import bottle
+import json
 from bottle import route, request, run
+from DataAccessLayer import DAL
+
+dbConn = None #DataAccessLayer for interactiung with the db
 
 def setup_routing():
     bottle.route('/eval', 'GET', get_eval)
@@ -24,7 +28,11 @@ def get_account():
     return "Get account"
 
 def post_account():
-    return "Create account"
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+    dbConn.insert_user(username, password)
+    print( "Create User " + username)
+    return "USER CREATED"
 
 #IMPORT - For importing applications/accounts
 def get_import():
@@ -33,5 +41,14 @@ def get_import():
 def post_import():
     return "Import some things"
 
-setup_routing()
-run(host='localhost', port=8080, debug=True)
+#Configuration
+def read_config():
+    with open('db.config') as config:
+        return json.load(config)
+
+if __name__ == "__main__":
+    config = read_config()
+    dbConn = DAL(config['mysql_server'], config['username'], config['password'], config['database'])
+
+    setup_routing()
+    run(host='localhost', port=8080, debug=True)
