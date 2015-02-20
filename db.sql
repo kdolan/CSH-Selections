@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 09, 2015 at 09:59 PM
+-- Generation Time: Feb 19, 2015 at 11:05 PM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.5
 
@@ -104,7 +104,9 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `applicant` (
   `key` int(11) NOT NULL AUTO_INCREMENT,
   `applicant_id` varchar(25) NOT NULL,
+  `group` int(11) DEFAULT NULL,
   `application_html` varchar(5000) DEFAULT NULL,
+  `gender` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`key`),
   UNIQUE KEY `applicant_id` (`applicant_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
@@ -135,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `criteria` (
 
 CREATE TABLE IF NOT EXISTS `score` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `criteria_id` int(11) DEFAULT NULL,
   `applicant` int(11) NOT NULL,
   `reviewer` int(11) NOT NULL,
   `score` decimal(10,4) DEFAULT NULL,
@@ -155,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password_md5` varchar(32) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Constraints for dumped tables
@@ -165,5 +168,5 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Constraints for table `score`
 --
 ALTER TABLE `score`
-  ADD CONSTRAINT `fk_user` FOREIGN KEY (`reviewer`) REFERENCES `user` (`id`),
-  ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`key`);
+  ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`key`),
+  ADD CONSTRAINT `fk_user` FOREIGN KEY (`reviewer`) REFERENCES `user` (`id`);
