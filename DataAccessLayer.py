@@ -15,6 +15,14 @@ class DAL(object):
         args = [username, str(password_hash)]
         self.usp_exec('spInsert_user', args)
 
+    def check_login(self, username, password):
+        m = hashlib.md5()
+        m.update(password)
+        password_hash = h.hexdigest()
+        args = [username, str(password_hash)]
+        #TODO: CALL USP
+        #TODO: Return 0 if credential is valid. Return 1 if user is admin. Return -1 if invalid login
+
     def insert_score(self, criteria_id, reviewer_id, applicant_id):
         args = [criteria_id, reviewer_id, applicant_id]
         self.usp_exec('spInsert_score', args)
