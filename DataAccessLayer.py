@@ -38,3 +38,13 @@ class DAL(object):
     def usp_exec(self, usp_name, args):
         self.cursor.callproc(usp_name, args)
         self.db.commit()
+
+    def get_applicantGroups(self):
+        #TODO
+
+    def get_applicantInGroup(self, groupId):
+        #TODO
+
+
+
+
