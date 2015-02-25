@@ -58,9 +58,11 @@ class DAL(object):
         groups = []
         for result in results:
             groups.append(result[0])
-        print(groups)
         return groups
 
     def get_applicantInGroup(self, groupId):
-        pass
-        #TODO
+        results = self.usp_exec('spGet_applicantInGroup', [groupId])
+        applicants = []
+        for applicant in results:
+            applicants.append(applicant[0])
+        return applicants
