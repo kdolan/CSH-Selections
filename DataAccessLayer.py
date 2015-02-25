@@ -1,12 +1,14 @@
 #DataAccessLayer
 import MySQLdb
 import hashlib #for md5
+import time
 
 class DAL(object):
 
     def __init__(self, db_host, db_user, db_password, db):
         self.db = MySQLdb.connect(db_host, db_user, db_password, db)
-        self.cursor = self.db.cursor()
+        #self.cursor = self.db.cursor() Not opened by default
+        self.cursor = None
 
     def insert_user(self, username, password):
         m = hashlib.md5()
@@ -44,15 +46,21 @@ class DAL(object):
         self.usp_exec('spInsert_applicant', args)
 
     def usp_exec(self, usp_name, args):
+        self.cursor = self.db.cursor()
         self.cursor.callproc(usp_name, args)
+        result = self.cursor.fetchall()
+        self.cursor.close()
         self.db.commit()
+        return result
 
     def get_applicantGroups(self):
-        #TODO
+        results = self.usp_exec('spGet_applicantGroups', [])
+        groups = []
+        for result in results:
+            groups.append(result[0])
+        print(groups)
+        return groups
 
     def get_applicantInGroup(self, groupId):
+        pass
         #TODO
-
-
-
-

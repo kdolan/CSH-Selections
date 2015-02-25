@@ -3,6 +3,8 @@ import json
 from bottle import route, request, run
 from DataAccessLayer import DAL
 
+import Controllers.index
+
 dbConn = None #DataAccessLayer for interactiung with the db
 
 def setup_routing():
@@ -26,7 +28,7 @@ def setup_routing():
 
 #INDEX Page
 def index():
-    return "Index Page. Login screen or redirect to eval."
+    return Controllers.index.page_html(dbConn)
 
 #ADMIN - CREATE USER PAGE - For creating accounts
 def get_create_user():
@@ -37,8 +39,8 @@ def post_create_user():
     password = request.forms.get('password')
     dbConn.insert_user(username, password)
     print( "Create User " + username)
-    return "USER CREATED"	
-	
+    return "USER CREATED"
+
 #ADMIN - Group Applications - For adding applications to selection groups
 def get_group_applications():
     return "Display group page"
