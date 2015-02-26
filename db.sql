@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 20, 2015 at 02:20 PM
+-- Generation Time: Feb 26, 2015 at 06:46 PM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
--- PHP Version: 5.5.9-1ubuntu4.5
+-- PHP Version: 5.5.9-1ubuntu4.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -27,6 +27,19 @@ SELECT * FROM SCORE
 CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_applicantCriteriaAverage`(IN `p_applicantID` VARCHAR(25), IN `p_criteriaId` INT)
 SELECT * FROM  `score` 
 #Selects an decimal that is the applicants average score for the specified criteria$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantGroups`()
+    NO SQL
+SELECT  `group` 
+FROM  `applicant` 
+GROUP BY  `group` 
+ORDER BY  `group`$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantInGroup`(IN `groupId` INT)
+    NO SQL
+SELECT  `applicant_id` 
+FROM  `applicant` 
+WHERE  `group` =groupId$$
 
 CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_criteria`()
 SELECT  `id` ,  `criteria_name` ,  `criteria_description` ,  `min_score` ,  `max_score` ,  `weight` ,  `disabled` 
@@ -93,6 +106,49 @@ INSERT INTO user
            p_password                    
          )$$
 
+CREATE DEFINER=`selections`@`%` PROCEDURE `spSession_create`(IN `session_key` VARCHAR(32), IN `username` VARCHAR(25), IN `password_md5` VARCHAR(32))
+BEGIN
+	DECLARE result int DEFAULT -404;
+    IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+			`user`.`username` =username AND 
+			`user`.`password_md5`=password_md5
+        ) then
+        
+		INSERT INTO  `selections`.`sessions` (
+        `username`,
+		`session_key` ,
+		`last_active`
+		)
+		VALUES (
+        username,
+		session_key, 
+		CURRENT_TIMESTAMP
+		);
+        IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+			`user`.`username` =username AND 
+            `user`.`admin`=1) then
+            SET result = 1; #Valid. Admin
+		ELSE
+			SET result = 0; #Valid. Not-admin
+		END IF;
+	ELSE
+		SET result = -1; #Invalid username/password
+	END IF;
+    SELECT result;
+END$$
+
+CREATE DEFINER=`selections`@`%` PROCEDURE `spSession_validate`(IN `session_key` VARCHAR(32), OUT `result` INT)
+BEGIN
+	IF EXISTS (SELECT 1 FROM `selections`.`sessions` WHERE  `sessions`.`session_key` =session_key) then
+			UPDATE  `selections`.`sessions`
+			SET  `last_active` =  CURRENT_TIMESTAMP
+			WHERE  `sessions`.`session_key` =session_key;
+			SET result=1;
+		ELSE
+			SET result=0;
+		END IF;
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -102,14 +158,14 @@ DELIMITER ;
 --
 
 CREATE TABLE IF NOT EXISTS `applicant` (
-  `key` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `applicant_id` varchar(25) NOT NULL,
   `group` int(11) DEFAULT NULL,
   `application_html` varchar(5000) DEFAULT NULL,
   `gender` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`key`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `applicant_id` (`applicant_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
@@ -149,6 +205,22 @@ CREATE TABLE IF NOT EXISTS `score` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(25) NOT NULL,
+  `session_key` varchar(32) NOT NULL,
+  `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `session_key` (`session_key`),
+  KEY `username` (`username`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user`
 --
 
@@ -169,5 +241,11 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Constraints for table `score`
 --
 ALTER TABLE `score`
-  ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`key`),
+  ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`id`),
   ADD CONSTRAINT `fk_user` FOREIGN KEY (`reviewer`) REFERENCES `user` (`id`);
+
+--
+-- Constraints for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
