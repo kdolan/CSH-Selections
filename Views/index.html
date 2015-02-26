@@ -3,15 +3,22 @@
 <!DOCTYPE html>
 <html>
 <body>
-
+<script>
+    //Variable containing the applicants in each group
+    var applicantList = {0};
+    //Update Applicants when the group changes to only show applicants in that group
+    function updateApplicants() {{
+        var group = document.getElementById("group").value;
+        document.getElementById("applicant").innerHTML = applicantList[group];
+    }}
+</script> 
 <h3>Select Application Group</h3>
-<select>
-    {0}
+<select id="group" onchange="updateApplicants()"> 
+    {1}
 </select>
 
 <h3>Select Application</h3>
-<select>
-    {1}
+<select id="applicant">
 </select>
           
 </body>
