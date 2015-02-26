@@ -25,19 +25,25 @@ class DAL(object):
         args = [username, str(password_hash)]
         m.update(username+str(time.time())+random.SystemRandom(time.time()))
         session_key = m.hexdigest()
-        #TODO: CALL USP
-        #TODO: Return 0 if credential is valid. Return 1 if user is admin. Return -1 if invalid login
-
+        #Returns 0 if credential is valid. Return 1 if user is admin. Return -1 if invalid login
+        result = self.usp_exec('spSession_create', [session_key, username, password_hash])
+        return result
+    """
+    Validates a session.
+    Return Values:
+    -1: Invalid session
+    0: Valid session
+    1: Admin session
+    """
     def validate_session(self, session_key):
-        pass
-        #TODO: Validate session key. Update last active time of session to now.
+        result = self.usp_exec('spSession_validate', [session_key])
+        return result
 
     def insert_score(self, criteria_id, reviewer_id, applicant_id):
         args = [criteria_id, reviewer_id, applicant_id]
         self.usp_exec('spInsert_score', args)
 
     def insert_criteria(self, name, description, min_score, max_score, weight):
-        A
         args = [name, descriotion, min_score, max_score, weight]
         self.usp_exec('spInsert_criteria', args)
 
