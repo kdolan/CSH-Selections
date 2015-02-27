@@ -18,16 +18,32 @@ class DAL(object):
         args = [username, str(password_hash)]
         self.usp_exec('spInsert_user', args)
 
+    """
+    Creates a new session with username and password. The password is hashed by
+    this function and sent to the database for auth.
+
+    RETURNS: List with two elements. The first element is the integer access
+    level of the user. The second element is the session key. If authentication
+    fails (access level -1) the second element will be None.
+    """
     def create_session(self, username, password):
         m = hashlib.md5()
         m.update(password)
         password_hash = m.hexdigest()
         args = [username, str(password_hash)]
-        m.update(username+str(time.time())+random.SystemRandom(time.time()))
+        m.update(username+str(time.time())+str(random.random()))
         session_key = m.hexdigest()
         #Returns 0 if credential is valid. Return 1 if user is admin. Return -1 if invalid login
         result = self.usp_exec('spSession_create', [session_key, username, password_hash])
-        return result
+
+        #Extract access level from the raw result
+        access_level = result[0][0]
+
+        if(access_level == 0 or access_level == 1): #Normal user or admin user
+            return_list = [access_level, session_key]
+        else: #invalid auth or result
+            return_list = [access_level, None]
+        return return_list
     """
     Validates a session.
     Return Values:
@@ -37,7 +53,9 @@ class DAL(object):
     """
     def validate_session(self, session_key):
         result = self.usp_exec('spSession_validate', [session_key])
-        return result
+        #Extract access level
+        access_level = result[0][0]
+        return access_level
 
     def insert_score(self, criteria_id, reviewer_id, applicant_id):
         args = [criteria_id, reviewer_id, applicant_id]
