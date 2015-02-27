@@ -1,6 +1,18 @@
 #This file will gather the "selection groups" and applications within that group.
-def page_html(dbconn):
+import auth
+
+def page_html(dbConn, http_request, http_response):
     raw_html = None
+
+    auth_response = auth.validate_session(dbConn, http_request, False)
+    access_level = auth_response[0]
+    header_text = auth_response[1]
+
+    #If not authenticated return login page
+    if(access_level != 0 and access_level != 1):
+        with open('Views/login.html', 'r') as myfile:
+            return myfile.read()
+
     with open('Views/index.html','r') as myfile:
         raw_html = myfile.read()
 

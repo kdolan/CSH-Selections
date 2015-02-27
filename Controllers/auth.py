@@ -22,7 +22,7 @@ the second element of the list will be an empty string.
 
 None is returned if the 'CSH-Selections' cookie is not found.
 """
-def validate_session(dbConn, http_request, http_response, redirect_on_fail=True):
+def validate_session(dbConn, http_request, redirect_on_fail=True):
     #TODO: Call DAL to validate session. Return the access level of
     #user. If the validation failed
 
