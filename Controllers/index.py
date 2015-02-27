@@ -14,7 +14,7 @@ def page_html(dbConn, http_request, http_response):
     with open('Views/index.html','r') as myfile:
         raw_html = myfile.read()
 
-    applicant_groups = dbconn.get_applicantGroups()
+    applicant_groups = dbConn.get_applicantGroups()
     group_options = _format_options(applicant_groups)
     print group_options
 
@@ -24,7 +24,7 @@ def page_html(dbConn, http_request, http_response):
     groups from smallest to largest. +1 for 0 indexed array."""
     applicant_list = [''] * (applicant_groups[-1] + 1)
     for group in applicant_groups:
-        applicants = dbconn.get_applicantInGroup(group)
+        applicants = dbConn.get_applicantInGroup(group)
         applicant_list[group] = applicants
 
     js_applicant_array = _format_javascript_array(applicant_list)

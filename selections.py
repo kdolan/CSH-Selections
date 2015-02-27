@@ -38,11 +38,15 @@ def post_login():
     password = request.forms.get('password')
     access_level = Controllers.auth.login(dbConn, response, username, password)
     if(access_level == 1):
-        return "ADMIN LOGIN"
+        #return "ADMIN LOGIN"
+        pass
     if(access_level == 0):
-        return "USER LOGIN"
+        #return "USER LOGIN"
+        pass
     else:
-        return "LOGIN FAIL"
+        #return "LOGIN FAIL"
+        pass
+    return Controllers.auth.redirect_to_index()
 
 #ADMIN - CREATE USER PAGE - For creating accounts
 def get_create_user():

@@ -29,3 +29,10 @@ def validate_session(dbConn, http_request, redirect_on_fail=True):
     #Try and validate the session
     access_level = dbConn.validate_session(session_key)
     return access_level
+
+"""
+Return html header to redirect to index page.
+"""
+def redirect_to_index():
+    with open('Views/redirect.html', 'r') as myfile:
+        return myfile.read()
