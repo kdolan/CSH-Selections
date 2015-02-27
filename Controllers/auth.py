@@ -15,11 +15,7 @@ to the index page and shown the login screen. Notably, this param
 is false when validate_session is called from the index page.
 http params are the bottle request and response objects.
 
-RETURNS: A list of two elements is returned. The first element
-is the integer access level of the user. The second element is the
-text to insert html header (for redirect). When no redirect is needed
-the second element of the list will be an empty string.
-
+RETURNS: The integer access level of the user.
 None is returned if the 'CSH-Selections' cookie is not found.
 """
 def validate_session(dbConn, http_request, redirect_on_fail=True):
@@ -32,5 +28,4 @@ def validate_session(dbConn, http_request, redirect_on_fail=True):
 
     #Try and validate the session
     access_level = dbConn.validate_session(session_key)
-
     return access_level

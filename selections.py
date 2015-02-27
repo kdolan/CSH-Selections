@@ -1,8 +1,9 @@
 import bottle
 import json
-from bottle import route, request, run
+from bottle import route, request, run, hook, response
 from DataAccessLayer import DAL
 
+import Controllers.auth
 import Controllers.index
 
 dbConn = None #DataAccessLayer for interactiung with the db
@@ -25,10 +26,23 @@ def setup_routing():
     bottle.route('/', 'GET', index)
     bottle.route('/index', 'GET', index)
 
+    bottle.route('/login', 'POST', post_login)
 
 #INDEX Page
 def index():
-    return Controllers.index.page_html(dbConn)
+    return Controllers.index.page_html(dbConn, request, response)
+
+#LOGIN Page
+def post_login():
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+    access_level = Controllers.auth.login(dbConn, response, username, password)
+    if(access_level == 1):
+        return "ADMIN LOGIN"
+    if(access_level == 0):
+        return "USER LOGIN"
+    else:
+        return "LOGIN FAIL"
 
 #ADMIN - CREATE USER PAGE - For creating accounts
 def get_create_user():

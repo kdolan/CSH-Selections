@@ -4,9 +4,7 @@ import auth
 def page_html(dbConn, http_request, http_response):
     raw_html = None
 
-    auth_response = auth.validate_session(dbConn, http_request, False)
-    access_level = auth_response[0]
-    header_text = auth_response[1]
+    access_level = auth.validate_session(dbConn, http_request, False)
 
     #If not authenticated return login page
     if(access_level != 0 and access_level != 1):
