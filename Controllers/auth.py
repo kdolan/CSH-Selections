@@ -5,6 +5,10 @@ def login(dbConn, http_response, username, password):
         #Set cookie with session key
         http_response.set_cookie("CSH-Selections", auth_result[1])
     return auth_result[0] #result access level
+
+def logout(http_response):
+    http_response.delete_cookie("CSH-Selections")
+
 """
 Attempts to validate the current session.
 If the session is invalid the user is redirected

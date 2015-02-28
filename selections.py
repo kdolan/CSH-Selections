@@ -27,6 +27,7 @@ def setup_routing():
     bottle.route('/index', 'GET', index)
 
     bottle.route('/login', 'POST', post_login)
+    bottle.route('/logout', 'GET', get_logout)
 
 #INDEX Page
 def index():
@@ -36,6 +37,8 @@ def index():
 def post_login():
     username = request.forms.get('username')
     password = request.forms.get('password')
+    print (username)
+    print (password)
     access_level = Controllers.auth.login(dbConn, response, username, password)
     if(access_level == 1):
         #return "ADMIN LOGIN"
@@ -46,6 +49,11 @@ def post_login():
     else:
         #return "LOGIN FAIL"
         pass
+    return Controllers.auth.redirect_to_index()
+
+#LOGOUT
+def get_logout():
+    Controllers.auth.logout(response)
     return Controllers.auth.redirect_to_index()
 
 #ADMIN - CREATE USER PAGE - For creating accounts
