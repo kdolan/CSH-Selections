@@ -11,8 +11,13 @@ def page_html(dbConn, http_request, http_response):
         with open('Views/login.html', 'r') as myfile:
             return myfile.read()
 
+    with open('Views/template.html', 'r') as templateFile:
+        template = templateFile.read()
+
     with open('Views/index.html','r') as myfile:
         raw_html = myfile.read()
+
+    raw_html = template.format(raw_html)
 
     applicant_groups = dbConn.get_applicantGroups()
     group_options = _format_options(applicant_groups)
