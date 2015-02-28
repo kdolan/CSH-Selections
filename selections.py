@@ -5,6 +5,7 @@ from DataAccessLayer import DAL
 
 import Controllers.auth
 import Controllers.index
+import Controllers.Eval
 
 dbConn = None #DataAccessLayer for interactiung with the db
 
@@ -87,8 +88,7 @@ def post_import():
 
 #EVAL PAGE
 def get_eval():
-    appId = request.query.id
-    return "Eval page " + appId
+   return Controllers.Eval.page_html(dbConn, request, response)
 
 def post_eval():
     return "Post to eval"
