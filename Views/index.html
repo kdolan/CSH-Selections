@@ -15,13 +15,19 @@
         updateApplicants();
      }};
 </script> 
-<h3>Select Application Group</h3>
-<select class="form-control" style="max-width: 200px;" id="group" onchange="updateApplicants()"> 
-    {1}
-</select>
+<h1>Application Selection <br>
+<small>Select your selections group and the application you would like to evaluate.</small></h1>
 
-<h3>Select Application</h3>
-<select class="form-control" style="max-width: 200px;" id="applicant">
-</select>
+<form action="eval" method="GET" id="selectFrm">
+	<h3>Application Group</h3>
+	<select class="form-control" style="max-width: 200px;" id="group" onchange="updateApplicants()"> 
+		{1}
+	</select>
+
+	<h3>Application</h3>
+	<select class="form-control" style="max-width: 200px;" id="applicant" name="applicant">
+	</select>
+	<button class="btn btn-primary" style="margin-top: 20px; type="submit">Select Application</button>
+</form>
 </div>
           
