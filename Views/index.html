@@ -9,14 +9,19 @@
         var group = document.getElementById("group").value;
         document.getElementById("applicant").innerHTML = applicantList[group];
     }}
+    
+    window.onload = function()
+    {{
+        updateApplicants();
+     }};
 </script> 
 <h3>Select Application Group</h3>
-<select id="group" onchange="updateApplicants()"> 
+<select class="form-control" style="max-width: 200px;" id="group" onchange="updateApplicants()"> 
     {1}
 </select>
 
 <h3>Select Application</h3>
-<select id="applicant">
+<select class="form-control" style="max-width: 200px;" id="applicant">
 </select>
 </div>
           
