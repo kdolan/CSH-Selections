@@ -1,12 +1,14 @@
 <!--This file will render an application as well as the score criteria and allow the user to submit the evaluation-->
 <div class="container">
 <script>
-	var weight = [0, 5, 3];
-	var criteriaCount = 2;
+	//Weight array. First element in array is always 0
+	var weight = {0};
+	//The number of criteria there are
+	var criteriaCount = {1};
 	function calculatePoints(id){{
 		var Score = document.getElementById("Score_" + id.toString());
 		
-		if(Score.value > Score.max){{
+		if(parseInt(Score.value) > parseInt(Score.max)){{
 			Score.value = Score.max;
 		}}
 		else if(Score.value < Score.min){{
@@ -31,9 +33,9 @@
 <small>Click on the link below to download the application. Then complete the evaluation.</small></h1>
 
 <style>
-	.bg-grey {
+	.bg-grey {{
 		background-color: #f5f5f5;
-	}
+	}}
 </style>
 <h3>Application Download:<small><a href="download?application={0}" target="_blank">Download Application</a></small></h3>
 <form action="eval" method="POST" id="evalFrm">
@@ -56,41 +58,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Criteria 1</td>
-            <td>1</td>
-            <td>10</td>
-			<td>5</td>
-			<td><input type="number" id="Score_1" name="Score_1" min="1" max="10" onchange="calculatePoints(1)" value="0"></td>
-			<td id="Points_1">0</td>
-          </tr>
-		  <tr  class="bg-grey"> 
-		  <td></td>
-		  <td colspan="6">
-			<strong>Description</strong>: My description. Do this 123
-			</td>
-		  </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Criteria 2</td>
-            <td>1</td>
-            <td>10</td>
-			<td>3</td>
-			<td><input type="number" id="Score_2" name="Score_2" min="1" max="10" onchange="calculatePoints(2)" value="0"></td>
-			<td id="Points_2">0</td>
-          </tr>
-		  <tr class="bg-grey">
-		  <td></td>
-		  <td colspan="6">
-			<strong>Description</strong>: My description. Do this 123
-			</td>
-		  </tr>
+			{2}
         </tbody>
       </table>
 	  <div class="pull-right">
 		<h3><strong>Total</strong>: <span id="Total_Score">0</span>
-		<br><small>Max: 80</span></h3>
+		<br><small>Max: {3}</span></h3>
 	  </div>
     </div>
 	<button class="btn btn-primary" style="margin-top: 20px; type="submit">Submit Evaluation</button>

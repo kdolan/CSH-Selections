@@ -18,4 +18,20 @@ def page_html(dbConn, http_request, http_response):
 
     raw_html = template.format(raw_html)
 
-    return raw_html
+    with open('Views/criteria_row.txt', 'r') as rowTxtFile:
+        row_text = rowTxtFile.read()
+
+    table_rows = ""
+    all_criteria = dbConn.get_criteria()
+    counter = 1
+    max_score = 0
+    weight_list = [0]
+    #c for criteria
+    for c in all_criteria:
+        table_rows += row_text.format(counter, c[1], int(c[3]), int(c[4]), int(c[5]), c[2])
+        max_score += int(c[4]) * int(c[5]) #calculate max score
+        weight_list.append(int(c[5]))
+        counter += 1
+
+    counter -= 1 #Set counter to be the number of criteria
+    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score))

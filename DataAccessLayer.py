@@ -90,3 +90,7 @@ class DAL(object):
         for applicant in results:
             applicants.append(applicant[0])
         return applicants
+
+    def get_criteria(self):
+        results = self.usp_exec('spGet_criteria', [])
+        return results
