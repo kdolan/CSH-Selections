@@ -1,6 +1,7 @@
 import bottle
 import json
-from bottle import route, request, run, hook, response
+import os #for working directory
+from bottle import route, request, run, hook, response, static_file
 from DataAccessLayer import DAL
 
 import Controllers.auth
@@ -29,6 +30,8 @@ def setup_routing():
 
     bottle.route('/login', 'POST', post_login)
     bottle.route('/logout', 'GET', get_logout)
+
+    bottle.route('/download', 'GET', get_download)
 
 #INDEX Page
 def index():
@@ -92,6 +95,10 @@ def get_eval():
 
 def post_eval():
     return "Post to eval"
+
+def get_download():
+    application_id = request.query['application']
+    return static_file(application_id+'.doc', root=os.getcwd()+'/applications/)
 
 #Configuration
 def read_config():
