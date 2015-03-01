@@ -1,7 +1,12 @@
 <!--This file will render an application as well as the score criteria and allow the user to submit the evaluation-->
 <div class="container">
 <script>
-
+	var weight = [0, 5, 3];
+	
+	function calculatePoints(id){{
+		score = document.getElementById("Score_" + id.toString()).value;
+		document.getElementById("Points_" + id.toString()).innerHTML = score * weight[id];
+	}}
 </script> 
 <h1>Application Evaluation <br>
 <small>Click on the link below to download the application. Then complete the evaluation.</small></h1>
@@ -36,10 +41,10 @@
             <th scope="row">1</th>
             <td>Criteria 1</td>
             <td>1</td>
-            <td>10</td>
+            <td>10</td>0
 			<td>5</td>
-			<td><input type="number" name="quantity" min="1" max="10"></td>
-			<td>40</td>
+			<td><input type="number" id="Score_1" name="Score_1" min="1" max="10" onchange="calculatePoints(1)" value="0"></td>
+			<td id="Points_1">0</td>
           </tr>
 		  <tr  class="bg-grey">
 		  <td></td>
@@ -53,8 +58,8 @@
             <td>1</td>
             <td>10</td>
 			<td>3</td>
-			<td><input type="number" name="quantity" min="1" max="10"></td>
-			<td>50</td>
+			<td><input type="number" id="Score_2" name="Score_2" min="1" max="10" onchange="calculatePoints(2)" value="0"></td>
+			<td id="Points_1">0</td>
           </tr>
 		  <tr class="bg-grey">
 		  <td></td>
