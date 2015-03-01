@@ -1,0 +1,15 @@
+<tr>
+	<th scope="row">{0}</th>
+	<td>{1}</td>
+	<td>{2}</td>
+	<td>{3}</td>
+	<td>{4}</td>
+	<td><input type="number" id="Score_{0}" name="Score_{0}" min="{2}" max="{3}" onchange="calculatePoints({0})" value="0"></td>
+	<td id="Points_{0}">0</td>
+  </tr>
+  <tr  class="bg-grey"> 
+  <td></td>
+  <td colspan="6">
+	<strong>Description</strong>: {5}
+		  </tr>
+	</td>
