@@ -41,8 +41,6 @@ def index():
 def post_login():
     username = request.forms.get('username')
     password = request.forms.get('password')
-    print (username)
-    print (password)
     access_level = Controllers.auth.login(dbConn, response, username, password)
     if(access_level == 1):
         #return "ADMIN LOGIN"
