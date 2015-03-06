@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 26, 2015 at 06:46 PM
+-- Generation Time: Mar 06, 2015 at 08:26 AM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.6
 
@@ -111,7 +111,8 @@ BEGIN
 	DECLARE result int DEFAULT -404;
     IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
 			`user`.`username` =username AND 
-			`user`.`password_md5`=password_md5
+			`user`.`password_md5`=password_md5 AND
+            `user`.`enabled`= 1   
         ) then
         
 		INSERT INTO  `selections`.`sessions` (
@@ -137,16 +138,42 @@ BEGIN
     SELECT result;
 END$$
 
-CREATE DEFINER=`selections`@`%` PROCEDURE `spSession_validate`(IN `session_key` VARCHAR(32), OUT `result` INT)
+CREATE DEFINER=`selections`@`%` PROCEDURE `spSession_validate`(IN `session_key` VARCHAR(32))
 BEGIN
-	IF EXISTS (SELECT 1 FROM `selections`.`sessions` WHERE  `sessions`.`session_key` =session_key) then
-			UPDATE  `selections`.`sessions`
+	DECLARE result int DEFAULT -404;            
+	DECLARE username varchar(25);
+            
+	#Check that the session exists and has not expired
+	IF EXISTS (SELECT 1 FROM `selections`.`sessions` WHERE  
+			`sessions`.`session_key` =session_key AND
+            `last_active` >= DATE_ADD(NOW(),INTERVAL -2 HOUR)
+            ) THEN 
+			#Update session
+            UPDATE  `selections`.`sessions`
 			SET  `last_active` =  CURRENT_TIMESTAMP
 			WHERE  `sessions`.`session_key` =session_key;
-			SET result=1;
+			
+			SELECT sessions.username INTO username
+			FROM  sessions
+			WHERE  sessions.session_key = session_key;
+            #SELECT username;		
+			
+			IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+				`user`.`username` =username AND 
+				`user`.`admin`=1) then
+				SET result = 1; #Valid. Admin
+			ELSE
+				SET result = 0; #Valid. Not-admin
+			END IF;
+
+			IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+				`user`.`enabled` =0) then
+				SET result=-1;
+			END IF;
 		ELSE
-			SET result=0;
+			SET result=-1;
 		END IF;
+	SELECT result;
 END$$
 
 DELIMITER ;
@@ -183,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `criteria` (
   `disabled` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `critera_name` (`criteria_name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -194,12 +221,12 @@ CREATE TABLE IF NOT EXISTS `criteria` (
 CREATE TABLE IF NOT EXISTS `score` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `criteria_id` int(11) DEFAULT NULL,
-  `applicant` int(11) NOT NULL,
-  `reviewer` int(11) NOT NULL,
+  `applicant` varchar(25) NOT NULL,
+  `session_key` varchar(32) NOT NULL,
   `score` decimal(10,4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `applicant` (`applicant`),
-  KEY `reviewer` (`reviewer`)
+  KEY `reviewer` (`session_key`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
@@ -211,12 +238,14 @@ CREATE TABLE IF NOT EXISTS `score` (
 CREATE TABLE IF NOT EXISTS `sessions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
+  `session_name` varchar(25) NOT NULL,
   `session_key` varchar(32) NOT NULL,
   `last_active` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ip_address` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `session_key` (`session_key`),
   KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=34 ;
 
 -- --------------------------------------------------------
 
@@ -228,6 +257,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
   `password_md5` varchar(32) NOT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
   `admin` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
@@ -241,8 +271,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Constraints for table `score`
 --
 ALTER TABLE `score`
-  ADD CONSTRAINT `fk_applicant` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`id`),
-  ADD CONSTRAINT `fk_user` FOREIGN KEY (`reviewer`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `score_ibfk_1` FOREIGN KEY (`applicant`) REFERENCES `applicant` (`applicant_id`),
+  ADD CONSTRAINT `score_ibfk_2` FOREIGN KEY (`session_key`) REFERENCES `sessions` (`session_key`);
 
 --
 -- Constraints for table `sessions`
