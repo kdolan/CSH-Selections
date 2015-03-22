@@ -108,4 +108,4 @@ if __name__ == "__main__":
     dbConn = DAL(config['mysql_server'], config['username'], config['password'], config['database'])
 
     setup_routing()
-    run(host='localhost', port=8080, debug=True)
+    run(host='blackhawk.kevinjdolan.com', port=8080, debug=True)
