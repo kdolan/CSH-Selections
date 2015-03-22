@@ -23,15 +23,19 @@ def page_html(dbConn, http_request, http_response):
 
     table_rows = ""
     all_criteria = dbConn.get_criteria()
+    enabledCriteria = []
     counter = 1
     max_score = 0
     weight_list = [0]
     #c for criteria
+    #Format Key: Row count, Criteria Name, min score, max score, weight description, criteria id.
     for c in all_criteria:
-        table_rows += row_text.format(counter, c[1], int(c[3]), int(c[4]), int(c[5]), c[2])
-        max_score += int(c[4]) * int(c[5]) #calculate max score
-        weight_list.append(int(c[5]))
-        counter += 1
+        if (c[6]==0): #If not disabled
+            enabledCriteria.append(int(c[0]))
+            table_rows += row_text.format(counter, c[1], int(c[3]), int(c[4]), int(c[5]), c[2], c[0])
+            max_score += int(c[4]) * int(c[5]) #calculate max score
+            weight_list.append(int(c[5]))
+            counter += 1
 
     counter -= 1 #Set counter to be the number of criteria
-    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score))
+    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score),str(enabledCriteria))
