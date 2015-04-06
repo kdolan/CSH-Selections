@@ -41,7 +41,10 @@ def index():
 def post_login():
     username = request.forms.get('username')
     password = request.forms.get('password')
-    access_level = Controllers.auth.login(dbConn, response, username, password)
+    session_name = request.forms.get('session_name')
+    ipadrr = request.remote_addr
+
+    access_level = Controllers.auth.login(dbConn, response, username, password, session_name, ipadrr)
     if(access_level == 1):
         #return "ADMIN LOGIN"
         pass

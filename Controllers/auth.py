@@ -1,6 +1,6 @@
-def login(dbConn, http_response, username, password):
+def login(dbConn, http_response, username, password, session_name, ipadrr):
     #TODO: Validate login and create session variable with session key
-    auth_result = dbConn.create_session(username, password)
+    auth_result = dbConn.create_session(username, password, session_name, ipadrr)
     if(auth_result[1] != None): #Session key is only defined when auth was valid
         #Set cookie with session key
         http_response.set_cookie("CSH-Selections", auth_result[1])

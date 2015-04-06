@@ -29,9 +29,12 @@
     <div class="container">
 
       <form class="form-signin" action="login" method="POST" id="loginFrm" name="loginFrm" >
-        <h2 class="form-signin-heading">CSH-Selections Web Portal Login</h2>
+        <h2 class="form-signin-heading" style="text-align:center;">CSH-Selections <br/>Web Portal Login</h2>
+        <h4 class="form-signin-heading"> Enter your name and the username and password</h4>
+        <input type="text" id="session_name" name="session_name" class="form-control" placeholder="Your Full Name" required>
+        <br>
         <label for="username" class="sr-only">Username</label>
-        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>

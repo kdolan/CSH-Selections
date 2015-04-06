@@ -26,7 +26,7 @@ class DAL(object):
     level of the user. The second element is the session key. If authentication
     fails (access level -1) the second element will be None.
     """
-    def create_session(self, username, password):
+    def create_session(self, username, password, session_name, ip_addr):
         m = hashlib.md5()
         m.update(password)
         password_hash = m.hexdigest()
@@ -34,7 +34,7 @@ class DAL(object):
         m.update(username+str(time.time())+str(random.random()))
         session_key = m.hexdigest()
         #Returns 0 if credential is valid. Return 1 if user is admin. Return -1 if invalid login
-        result = self.usp_exec('spSession_create', [session_key, username, password_hash])
+        result = self.usp_exec('spSession_create', [session_key, username, password_hash, session_name, ip_addr])
 
         #Extract access level from the raw result
         access_level = result[0][0]
