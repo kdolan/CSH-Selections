@@ -102,7 +102,9 @@ def post_eval():
 
 def get_download():
     application_id = request.query['application']
-    return static_file(application_id+'.doc', root=os.getcwd()+'/applications/')
+    fileName = application_id+'.doc'
+    path = os.getcwd()+'/Applications/'
+    return static_file(fileName, root=path)
 
 #Configuration
 def read_config():

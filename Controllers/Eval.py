@@ -21,6 +21,9 @@ def page_html(dbConn, http_request, http_response):
     with open('Views/criteria_row.txt', 'r') as rowTxtFile:
         row_text = rowTxtFile.read()
 
+    applicant_id = http_request.query["applicant"]
+    applicant_group = http_request.query["group"]
+
     table_rows = ""
     all_criteria = dbConn.get_criteria()
     enabledCriteria = []
@@ -38,4 +41,4 @@ def page_html(dbConn, http_request, http_response):
             counter += 1
 
     counter -= 1 #Set counter to be the number of criteria
-    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score),str(enabledCriteria))
+    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score),str(enabledCriteria),applicant_id, applicant_group )
