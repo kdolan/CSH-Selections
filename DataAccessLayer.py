@@ -57,8 +57,8 @@ class DAL(object):
         access_level = result[0][0]
         return access_level
 
-    def insert_score(self, criteria_id, reviewer_id, applicant_id):
-        args = [criteria_id, reviewer_id, applicant_id]
+    def insert_score(self, critieraId, applicant_id, session_key, score):
+        args = [critieraId, applicant_id, session_key, score]
         self.usp_exec('spInsert_score', args)
 
     def insert_criteria(self, name, description, min_score, max_score, weight):

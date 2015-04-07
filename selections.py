@@ -96,9 +96,9 @@ def get_eval():
 
 def post_eval():
     #List of of criteria submitted
-    criteriaList = requests.forms.get('criteria')
-
-    return "Post to eval"
+    #criteriaList = requests.forms.get('criteria')
+    return Controllers.Eval.submit_eval(dbConn, request)
+    #return "Post to eval"
 
 def get_download():
     application_id = request.query['application']
