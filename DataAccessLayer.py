@@ -65,9 +65,13 @@ class DAL(object):
         args = [name, descriotion, min_score, max_score, weight]
         self.usp_exec('spInsert_criteria', args)
 
-    def insert_applicant(self, applicant_id, application_html):
-        args = [applicant_id, applicantion_html]
+    def insert_applicant(self, applicant_id, gender, group):
+        args = [applicant_id, gender, group]
         self.usp_exec('spInsert_applicant', args)
+
+    def update_applicant(self, applicant_id, group):
+        args = [applicant_id, group]
+        self.usp_exec('spUpdate_applicant', args)
 
     def usp_exec(self, usp_name, args):
         self.cursor = self.db.cursor()
@@ -94,3 +98,4 @@ class DAL(object):
     def get_criteria(self):
         results = self.usp_exec('spGet_criteria', [])
         return results
+

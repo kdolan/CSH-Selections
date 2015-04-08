@@ -1,4 +1,5 @@
 from DataAccessLayer import DAL
+from selections import read_config
 import csv
 import sys
 
@@ -6,6 +7,9 @@ dbConn = None #InitLater
 
 if __name__ == "__main__":
     csvFile = sys.argv[1]
+
+    config = read_config()
+    dbConn =  DAL(config['mysql_server'], config['username'], config['password'], config['database'])
 
     matrix = list()
     with open(csvFile, 'rb') as file:
@@ -44,10 +48,10 @@ if __name__ == "__main__":
         group = row[2]
 
         if application_id in new_applicants:
-            #dbConn.insert_applicant
+            dbConn.insert_applicant(application_id, gender, group)
         else:
-            #dbConn.update_applicant
+            dbConn.update_applicant(application_id, gender, group)
 
     for applicant in notUpdated_applicants:
-        #dbConn.update_clearGroup
+        dbConn.update_applicant(application_id, 0) #Clear group
 
