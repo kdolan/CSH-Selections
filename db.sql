@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 11, 2015 at 02:57 PM
+-- Generation Time: Apr 11, 2015 at 04:24 PM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.7
 
@@ -13,8 +13,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `selections`
 --
-CREATE DATABASE IF NOT EXISTS `selections` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `selections`;
 
 DELIMITER $$
 --
@@ -30,16 +28,22 @@ SELECT * FROM  `score`
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantGroups`()
     NO SQL
-SELECT  `group` 
+SELECT  `app_group` 
 FROM  `applicant` 
-GROUP BY  `group` 
-ORDER BY  `group`$$
+WHERE `app_group`!=0
+GROUP BY  `app_group` 
+ORDER BY  `app_group`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantInGroup`(IN `groupId` INT)
     NO SQL
 SELECT  `applicant_id` 
 FROM  `applicant` 
-WHERE  `group` =groupId$$
+WHERE  `app_group` =groupId$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicants`()
+    NO SQL
+SELECT applicant_id
+FROM  `applicant`$$
 
 CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_criteria`()
 SELECT  `id` ,  `criteria_name` ,  `criteria_description` ,  `min_score` ,  `max_score` ,  `weight` ,  `disabled` 
@@ -50,16 +54,18 @@ CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_overallCriteriaAverage`(IN p_criter
 SELECT * FROM SCORE
 #Selects an decimal that is the overall average score for the specified criteria$$
 
-CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_applicant`(IN `p_applicant_id` VARCHAR(25), IN `p_application_html` VARCHAR(5000))
+CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_applicant`(IN `p_applicant_id` VARCHAR(25), IN `p_group` INT(11), IN `p_gender` BOOLEAN)
 INSERT INTO applicant
          (
 			   applicant_id,
-               application_html
+               applicant.app_group,
+               gender
          )
     VALUES 
          ( 
            p_applicant_id,
-           p_application_html
+           p_group,
+           p_gender
          )$$
 
 CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_criteria`(IN `p_criteria_name` VARCHAR(100), IN `p_criteria_description` VARCHAR(250), IN `p_min_score` DECIMAL(10,4), IN `p_max_score` DECIMAL(10,4), IN `p_weight` DECIMAL(10,4))
@@ -177,6 +183,11 @@ BEGIN
 	SELECT result;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdate_applicant`(IN `p_applicantId` VARCHAR(25), IN `p_group` INT(11))
+    NO SQL
+UPDATE `selections`.`applicant` SET `app_group` = p_group
+WHERE `applicant`.`applicant_id` = p_applicantId$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -188,12 +199,11 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `applicant` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `applicant_id` varchar(25) NOT NULL,
-  `group` int(11) DEFAULT NULL,
-  `application_html` varchar(5000) DEFAULT NULL,
+  `app_group` int(11) DEFAULT NULL,
   `gender` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `applicant_id` (`applicant_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=67 ;
 
 -- --------------------------------------------------------
 
@@ -247,7 +257,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `session_key` (`session_key`),
   KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
 
 -- --------------------------------------------------------
 
