@@ -66,6 +66,10 @@ class DAL(object):
         self.usp_exec('spInsert_criteria', args)
 
     def insert_applicant(self, applicant_id, gender, group):
+        if(gender == M):
+            gender = 0
+        else:
+            gender = 1
         args = [applicant_id, gender, group]
         self.usp_exec('spInsert_applicant', args)
 
