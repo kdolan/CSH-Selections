@@ -18,6 +18,12 @@ class DAL(object):
         args = [username, str(password_hash)]
         self.usp_exec('spInsert_user', args)
 
+    def update_user(self, username, password):
+        m = hashlib.md5()
+        m.update(password)
+        password_hash = m.hexdigest()
+        args = [str(password_hash), username]
+        self.usp_exec('spUpdate_user', args)
     """
     Creates a new session with username and password. The password is hashed by
     this function and sent to the database for auth.

@@ -1,6 +1,7 @@
 import bottle
 import json
 import os #for working directory
+import sys
 from bottle import route, request, run, hook, response, static_file
 from DataAccessLayer import DAL
 
@@ -115,6 +116,9 @@ def read_config():
 if __name__ == "__main__":
     config = read_config()
     dbConn = DAL(config['mysql_server'], config['username'], config['password'], config['database'])
+
+    if(sys.argv[1]!=None): #Set selections password
+        dbConn.update_user('selections', sys.argv[1])
 
     setup_routing()
     run(host='blackhawk.kevinjdolan.com', port=8080, debug=True)
