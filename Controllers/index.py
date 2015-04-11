@@ -19,8 +19,10 @@ def page_html(dbConn, http_request, http_response):
 
     raw_html = template.format(raw_html)
 
+    group = http_request.get_cookie("CSH-Selections-Group")
+
     applicant_groups = dbConn.get_applicantGroups()
-    group_options = _format_options(applicant_groups)
+    group_options = _format_options(applicant_groups, group)
     print group_options
 
     """The applicant_list holds a list of all applicants where the index of the
@@ -35,10 +37,13 @@ def page_html(dbConn, http_request, http_response):
     js_applicant_array = _format_javascript_array(applicant_list)
     return raw_html.format(js_applicant_array, group_options)
 
-def _format_options(optionList):
+def _format_options(optionList, group=None):
     returnString = ""
     for option in optionList:
-        returnString += '<option value="{0}">{0}</option>'.format(option)
+        if(str(option) == group):
+            returnString += '<option value="{0}" selected>{0}</option>'.format(option)
+        else:
+            returnString += '<option value="{0}">{0}</option>'.format(option)
 
     return returnString
 

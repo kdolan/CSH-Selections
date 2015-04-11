@@ -92,7 +92,8 @@ def post_import():
 
 #EVAL PAGE
 def get_eval():
-   return Controllers.Eval.page_html(dbConn, request, response)
+    response.set_cookie("CSH-Selections-Group", request.query["group"])
+    return Controllers.Eval.page_html(dbConn, request, response)
 
 def post_eval():
     #List of of criteria submitted
