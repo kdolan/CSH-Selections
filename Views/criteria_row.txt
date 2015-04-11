@@ -4,7 +4,7 @@
 	<td>{2}</td>
 	<td>{3}</td>
 	<td>{4}</td>
-	<td><input type="number" id="Score_{6}" name="Score_{6}" min="{2}" max="{3}" onchange="calculatePoints({6}, {0})" value="0"></td>
+	<td><input type="number" id="Score_{6}" name="Score_{6}" min="{2}" max="{3}" onchange="calculatePoints({6}, {0})" value="1"></td>
 	<td id="Points_{6}">0</td>
   </tr>
   <tr  class="bg-grey"> 

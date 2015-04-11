@@ -1,6 +1,7 @@
 #TODO: This module will gather data from the database including application and eval criteria. It will then render the eval page with the application and rubric.
 import auth
 import ast
+import index
 
 def page_html(dbConn, http_request, http_response):
     raw_html = None
@@ -45,7 +46,7 @@ def page_html(dbConn, http_request, http_response):
     counter -= 1 #Set counter to be the number of criteria
     return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score),str(enabledCriteria),applicant_id, applicant_group )
 
-def submit_eval(dbConn, http_request):
+def submit_eval(dbConn, http_request, http_response, redirect):
     access_level = auth.validate_session(dbConn, http_request, False)
 
     #If not authenticated return login page
@@ -62,4 +63,4 @@ def submit_eval(dbConn, http_request):
     for criteria in all_criteria:
         score = http_request.forms.get("Score_"+str(criteria))
 	dbConn.insert_score(criteria, application_id, session_key, score)
-
+    redirect("index?sbmtd")

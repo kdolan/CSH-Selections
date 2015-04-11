@@ -70,6 +70,29 @@
 		<br><small>Max: {3}</span></h3>
 	  </div>
     </div>
-	<button class="btn btn-primary" style="margin-top: 20px; type="submit">Submit Evaluation</button>
+	 <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#submitModal">Submit Evaluation</a>
 </form>
+    <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="submitModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h2 class="modal-title" id="myModalLabel">Submit Evaluation</h2>
+          </div>
+          <div class="modal-body">
+            <h2>Are you sure that you want to submit this evaluation?</br><h2>
+			<h3>Reviewer: Kevin J Dolan</br>
+			Application ID: <b>000000</b></br></h3>
+			<h2><small>Total Score: <b>300</b></small></h2>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-large btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-large btn-success" onclick="document.getElementById('evalFrm').submit()">Submit Evaluation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 </div>
+
+

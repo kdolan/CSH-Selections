@@ -76,7 +76,7 @@ class DAL(object):
             gender = 0
         else:
             gender = 1
-        args = [applicant_id, gender, group]
+        args = [applicant_id, group, gender]
         self.usp_exec('spInsert_applicant', args)
 
     def update_applicant(self, applicant_id, group):

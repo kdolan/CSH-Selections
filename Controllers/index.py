@@ -22,6 +22,10 @@ def page_html(dbConn, http_request, http_response):
     group = http_request.get_cookie("CSH-Selections-Group")
 
     applicant_groups = dbConn.get_applicantGroups()
+
+    if(len(applicant_groups)==0):
+        return "WARNING: There are currently no applicantions/groups. Selections is disabled"
+
     group_options = _format_options(applicant_groups, group)
     print group_options
 
@@ -30,12 +34,24 @@ def page_html(dbConn, http_request, http_response):
     group is the last item in the list because get_applicantGroups returns the
     groups from smallest to largest. +1 for 0 indexed array."""
     applicant_list = [''] * (applicant_groups[-1] + 1)
+
+    if(len(applicant_list)==0):
+        return "WARNING: There are currently no applications. Selections is disabled"
     for group in applicant_groups:
         applicants = dbConn.get_applicantInGroup(group)
         applicant_list[group] = applicants
 
+    #Determine if the eval submitted successfully alert should be shown based on
+    #if the sbmtd flag is passed
+    hide_div = "hidden"
+    try:
+        http_request.query["sbmtd"] #Exception if key does not exist (not passed)
+        hide_div = ""
+    except:
+        pass
+
     js_applicant_array = _format_javascript_array(applicant_list)
-    return raw_html.format(js_applicant_array, group_options)
+    return raw_html.format(js_applicant_array, group_options, hide_div)
 
 def _format_options(optionList, group=None):
     returnString = ""
