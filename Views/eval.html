@@ -18,18 +18,20 @@
 		}}
 		
 		document.getElementById("Points_" + id.toString()).innerHTML = Score.value * weight[rowCount];
-		updateTotal();
+		//updateTotal();
 	}}
 	
 	function updateTotal(){{
 		var total = 0;
 		for(i=0; i < criteriaCount; i++)
 		{{
+            calculatePoints(enabledCriteria[i].toString(), i+1)
 			pointValue = parseInt(document.getElementById("Points_" + enabledCriteria[i].toString()).innerHTML);
 			total += pointValue;
 		}}
 		document.getElementById("Total_Score").innerHTML = total;
 	}}
+
 </script> 
 <h1>Application Evaluation <br>
 <small>Click on the link below to download the application. Then complete the evaluation.</small></h1>
@@ -95,4 +97,7 @@
 
 </div>
 
+<script>
+updateTotal();
+</script>
 
