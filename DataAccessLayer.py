@@ -66,7 +66,7 @@ class DAL(object):
         self.usp_exec('spInsert_criteria', args)
 
     def insert_applicant(self, applicant_id, gender, group):
-        if(gender == M):
+        if(gender == 'M'):
             gender = 0
         else:
             gender = 1
@@ -84,6 +84,13 @@ class DAL(object):
         self.cursor.close()
         self.db.commit()
         return result
+
+    def get_allApplicants(self):
+        results = self.usp_exec('spGet_applicants', [])
+        applicants = []
+        for result in results:
+            applicants.append(result[0])
+        return applicants
 
     def get_applicantGroups(self):
         results = self.usp_exec('spGet_applicantGroups', [])
