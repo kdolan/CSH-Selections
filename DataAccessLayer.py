@@ -110,3 +110,4 @@ class DAL(object):
         results = self.usp_exec('spGet_criteria', [])
         return results
 
+
