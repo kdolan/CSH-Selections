@@ -67,6 +67,10 @@ def get_create_user():
     return "Get account"
 
 def post_create_user():
+    access_level = Controllers.atuh.validate_session(dbConn, request)
+    if(access_levl != 1):
+        return "Authentication failed"
+
     username = request.forms.get('username')
     password = request.forms.get('password')
     dbConn.insert_user(username, password)
@@ -103,6 +107,9 @@ def post_eval():
     #return "Post to eval"
 
 def get_download():
+    access_level = Controllers.atuh.validate_session(dbConn, request)
+    if(access_levl != 1):
+        return "Authentication failed"
     application_id = request.query['application']
     fileName = application_id+'.doc'
     path = os.getcwd()+'/Applications/'
