@@ -8,6 +8,7 @@ from DataAccessLayer import DAL
 import Controllers.auth
 import Controllers.index
 import Controllers.Eval
+import csv
 
 dbConn = None #DataAccessLayer for interactiung with the db
 
@@ -108,12 +109,47 @@ def post_eval():
 
 def get_download():
     access_level = Controllers.atuh.validate_session(dbConn, request)
-    if(access_levl != 1):
+    if(access_level != 0 and access_level!=1):
         return "Authentication failed"
     application_id = request.query['application']
     fileName = application_id+'.doc'
     path = os.getcwd()+'/Applications/'
     return static_file(fileName, root=path)
+
+def get_view_scores():
+    access_level = Controllers.atuh.validate_session(dbConn, request)
+    if(access_levl != 1):
+        return "Authentication failed"
+
+    applicants = dbConn.get_allApplicants()
+    scoreHeaderCount = 0 #The number of score headers to write to the csv file. This is the max number of scores for a single application.
+    rows = []
+    for applicant in applicants:
+        scores = dbConn.get_applicantScores(applicant)
+        if(len(scores) > scoreHeaderCount):
+            scoreHeaderCount = len(scores)
+
+        row = [applicant, 0] #list starting with applicant and total score placeholder
+        totalScore = 0
+
+        for score in scores:
+            row.append(score)
+            totalScore += score
+        row[1] = totalScore/len(scores) #Set average score in row
+        rows.append(row)
+
+    with open('Scores.csv', 'w') as csvfile:
+        fieldnames = ['Application Id', 'Average Score']
+
+        for i in range(1, scoreHeaderCount+1):
+            fieldnames.append("Score_" + str(i))
+
+        writer = csv.writer(csvfile, dialect='excel')
+        writer.writerow(fieldnames)
+
+        for row in rows:
+            writer.writerow(row)
+
 
 #Configuration
 def read_config():

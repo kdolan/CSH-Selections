@@ -116,4 +116,9 @@ class DAL(object):
         results = self.usp_exec('spGet_criteria', [])
         return results
 
-
+    def get_applicationSocres(self, application_id):
+        results = self.usp_exec('spGet_applicationScores', [application_id])
+        scores = []
+        for score in results:
+            scores.append(scores[0])
+        return scores
