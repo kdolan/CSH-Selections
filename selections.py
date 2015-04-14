@@ -22,7 +22,7 @@ def setup_routing():
     bottle.route('/admin/GroupApplications', 'GET', get_group_applications)
     bottle.route('/admin/GroupApplications', 'POST', post_group_applications)
 
-    bottle.route('/admin/ViewScores', 'GET', get_view_scores)
+    bottle.route('/admin/Scores.csv', 'GET', get_view_scores)
 
     bottle.route('/import', 'GET', get_import)
     bottle.route('/import', 'POST', post_import)
@@ -108,7 +108,7 @@ def post_eval():
     #return "Post to eval"
 
 def get_download():
-    access_level = Controllers.atuh.validate_session(dbConn, request)
+    access_level = Controllers.auth.validate_session(dbConn, request)
     if(access_level != 0 and access_level!=1):
         return "Authentication failed"
     application_id = request.query['application']
@@ -117,8 +117,8 @@ def get_download():
     return static_file(fileName, root=path)
 
 def get_view_scores():
-    access_level = Controllers.atuh.validate_session(dbConn, request)
-    if(access_levl != 1):
+    access_level = Controllers.auth.validate_session(dbConn, request)
+    if(access_level != 1):
         return "Authentication failed"
 
     applicants = dbConn.get_allApplicants()
@@ -135,10 +135,14 @@ def get_view_scores():
         for score in scores:
             row.append(score)
             totalScore += score
-        row[1] = totalScore/len(scores) #Set average score in row
+
+        if(len(scores)==0): #Divide by 0 check
+            row[1] = 0
+        else:
+            row[1] = totalScore/len(scores) #Set average score in row
         rows.append(row)
 
-    with open('Scores.csv', 'w') as csvfile:
+    with open('Scores.csv', 'w+') as csvfile:
         fieldnames = ['Application Id', 'Average Score']
 
         for i in range(1, scoreHeaderCount+1):
@@ -149,6 +153,9 @@ def get_view_scores():
 
         for row in rows:
             writer.writerow(row)
+
+    path = os.getcwd()
+    return static_file('Scores.csv', root=path)
 
 
 #Configuration
