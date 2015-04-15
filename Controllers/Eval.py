@@ -44,7 +44,7 @@ def page_html(dbConn, http_request, http_response):
             counter += 1
 
     counter -= 1 #Set counter to be the number of criteria
-    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score),str(enabledCriteria),applicant_id, applicant_group )
+    return raw_html.format(str(weight_list), str(counter), table_rows, str(max_score),str(enabledCriteria),applicant_id, applicant_group, "NAME HERE" )
 
 def submit_eval(dbConn, http_request, http_response, redirect):
     access_level = auth.validate_session(dbConn, http_request, False)

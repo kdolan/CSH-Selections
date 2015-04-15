@@ -30,6 +30,7 @@
 			total += pointValue;
 		}}
 		document.getElementById("Total_Score").innerHTML = total;
+        document.getElementById("modal_score").innerHTML = total;
 	}}
 
 </script> 
@@ -83,9 +84,9 @@
           </div>
           <div class="modal-body">
             <h2>Are you sure that you want to submit this evaluation?</br><h2>
-			<h3>Reviewer: Kevin J Dolan</br>
-			Application ID: <b>000000</b></br></h3>
-			<h2><small>Total Score: <b>300</b></small></h2>
+                    <h3>Reviewer: {6}</br>
+                Application ID: <b>{5}</b></br></h3>
+            <h2><small>Total Score: <span id="modal_score" style="font-weight: bold;">0</span></small></h2>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-large btn-default" data-dismiss="modal">Cancel</button>
