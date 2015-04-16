@@ -22,6 +22,7 @@ def page_html(dbConn, http_request, http_response):
     group = http_request.get_cookie("CSH-Selections-Group")
 
     applicant_groups = dbConn.get_applicantGroups()
+    apps_reviewed = dbConn.get_appsReviwedBySession(http_request.get_cookie("CSH-Selections"))
 
     if(len(applicant_groups)==0):
         return "WARNING: There are currently no applicantions/groups. Selections is disabled"
@@ -39,19 +40,27 @@ def page_html(dbConn, http_request, http_response):
         return "WARNING: There are currently no applications. Selections is disabled"
     for group in applicant_groups:
         applicants = dbConn.get_applicantInGroup(group)
+        applicants = [x for x in applicants if x not in apps_reviewed]
         applicant_list[group] = applicants
 
     #Determine if the eval submitted successfully alert should be shown based on
     #if the sbmtd flag is passed
-    hide_div = "hidden"
+    hide_div_submit = "hidden"
     try:
         http_request.query["sbmtd"] #Exception if key does not exist (not passed)
-        hide_div = ""
+        hide_div_submit = ""
     except:
         pass
 
-    js_applicant_array = _format_javascript_array(applicant_list)
-    return raw_html.format(js_applicant_array, group_options, hide_div)
+	hid_div_done = "hidden"
+    try:
+        http_request.query["done"] #Exception if key does not exist (not passed)
+        hid_div_done = ""
+    except:
+        pass
+
+    js_applicant_array = _format_javascript_array(applicant_list )
+    return raw_html.format(js_applicant_array, group_options, hide_div_submit, hid_div_done)
 
 def _format_options(optionList, group=None):
     returnString = ""

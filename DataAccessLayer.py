@@ -98,6 +98,11 @@ class DAL(object):
             applicants.append(result[0])
         return applicants
 
+    def get_sessionUsername(self, session_id):
+        args = [session_id]
+        result = self.usp_exec('spGet_sessionUsername', args)
+        return result[0][0]
+
     def get_applicantGroups(self):
         results = self.usp_exec('spGet_applicantGroups', [])
         groups = []
@@ -122,3 +127,10 @@ class DAL(object):
         for score in results:
             scores.append(score[0])
         return scores
+
+    def get_appsReviwedBySession(self, session_key):
+        results = self.usp_exec('spGet_appsReviewedBySession', [session_key])
+        applicants = []
+        for applicant in results:
+            applicants.append(applicant[0])
+        return applicants
