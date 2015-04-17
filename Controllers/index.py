@@ -52,15 +52,15 @@ def page_html(dbConn, http_request, http_response):
     except:
         pass
 
-	hid_div_done = "hidden"
+    hide_div_done = "hidden"
     try:
         http_request.query["done"] #Exception if key does not exist (not passed)
-        hid_div_done = ""
+        hide_div_done = ""
     except:
         pass
 
     js_applicant_array = _format_javascript_array(applicant_list )
-    return raw_html.format(js_applicant_array, group_options, hide_div_submit, hid_div_done)
+    return raw_html.format(js_applicant_array, group_options, hide_div_submit, hide_div_done)
 
 def _format_options(optionList, group=None):
     returnString = ""

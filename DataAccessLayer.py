@@ -134,3 +134,11 @@ class DAL(object):
         for applicant in results:
             applicants.append(applicant[0])
         return applicants
+
+    def get_minMaxScore(self, criteria):
+        results = self.usp_exec('spGet_minMaxScore', [criteria])
+        return results
+
+    def insert_error(self, sessionKey, description):
+        self.usp_exec('spInsert_error', [sessionKey, description])
+        return

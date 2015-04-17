@@ -62,6 +62,14 @@ def submit_eval(dbConn, http_request, http_response, redirect):
     print application_id
 
     for criteria in all_criteria:
+        min_max_score = dbConn.get_minMaxScore(criteria)
+        score = http_request.forms.get("Score_"+str(criteria))
+        if(score < min_max_score[0] or score > min_max_score[1]):
+            dbConn.insert_error(session_key, "Invalid score: min max violation")
+            raise(ValueError("Invalid Score! Your attempt to break a production evaluations system has been logged."))
+
+
+    for criteria in all_criteria:
         score = http_request.forms.get("Score_"+str(criteria))
 	dbConn.insert_score(criteria, application_id, session_key, score)
     redirect("index?sbmtd")
