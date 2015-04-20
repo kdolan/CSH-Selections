@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 11, 2015 at 04:24 PM
+-- Generation Time: Apr 20, 2015 at 11:31 AM
 -- Server version: 5.6.19-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.7
 
@@ -11,22 +11,22 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 --
--- Database: `selections`
+-- Database: `selections_prod`
 --
 
 DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_applicantAverage`(IN p_applicantID varchar(25))
+CREATE DEFINER=`selections`@`localhost` PROCEDURE `spGet_applicantAverage`(IN `p_applicantID` VARCHAR(25))
 SELECT * FROM SCORE
 #Selects an decimal that is the applicants average score accross all criteria$$
 
-CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_applicantCriteriaAverage`(IN `p_applicantID` VARCHAR(25), IN `p_criteriaId` INT)
+CREATE DEFINER=`selections`@`%` PROCEDURE `spGet_applicantCriteriaAverage`(IN `p_applicantID` VARCHAR(25), IN `p_criteriaId` INT)
 SELECT * FROM  `score` 
 #Selects an decimal that is the applicants average score for the specified criteria$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantGroups`()
+CREATE DEFINER=`selections`@`localhost` PROCEDURE `spGet_applicantGroups`()
     NO SQL
 SELECT  `app_group` 
 FROM  `applicant` 
@@ -34,25 +34,49 @@ WHERE `app_group`!=0
 GROUP BY  `app_group` 
 ORDER BY  `app_group`$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantInGroup`(IN `groupId` INT)
+CREATE DEFINER=`selections`@`localhost` PROCEDURE `spGet_applicantInGroup`(IN `groupId` INT)
     NO SQL
 SELECT  `applicant_id` 
 FROM  `applicant` 
 WHERE  `app_group` =groupId$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicantionScores`(IN `P_application_id` VARCHAR(25))
+    NO SQL
+SELECT SUM( T1.score * T2.weight ) 
+FROM score AS T1
+INNER JOIN criteria AS T2 ON T1.criteria_id = T2.id
+WHERE T1.applicant =  P_application_id
+GROUP BY session_key$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_applicants`()
     NO SQL
 SELECT applicant_id
 FROM  `applicant`$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_appsReviewedBySession`(IN `p_session_key` VARCHAR(32))
+    NO SQL
+SELECT applicant FROM score
+WHERE session_key=p_session_key
+GROUP BY applicant$$
+
 CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_criteria`()
 SELECT  `id` ,  `criteria_name` ,  `criteria_description` ,  `min_score` ,  `max_score` ,  `weight` ,  `disabled` 
-FROM  `selections`.`criteria` 
+FROM  `criteria` 
 WHERE disabled!=1$$
 
-CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_overallCriteriaAverage`(IN p_criteriaId INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_minMaxScore`(IN `c_id` INT)
+    NO SQL
+SELECT min_score, max_score FROM criteria WHERE id = c_id$$
+
+CREATE DEFINER=`kdolan`@`%` PROCEDURE `spGet_overallCriteriaAverage`(IN `p_criteriaId` INT)
 SELECT * FROM SCORE
 #Selects an decimal that is the overall average score for the specified criteria$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spGet_sessionUsername`(IN `p_session_key` VARCHAR(32))
+    NO SQL
+SELECT session_name
+FROM  `sessions` 
+WHERE  `session_key` LIKE  p_session_key$$
 
 CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_applicant`(IN `p_applicant_id` VARCHAR(25), IN `p_group` INT(11), IN `p_gender` BOOLEAN)
 INSERT INTO applicant
@@ -86,8 +110,13 @@ INSERT INTO criteria
            p_weight
          )$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spInsert_error`(IN `p_sessionkey` VARCHAR(32), IN `p_description` VARCHAR(32))
+    NO SQL
+INSERT INTO errors (session_key, datetime, description) 
+VALUES (p_sessionkey, CURRENT_TIMESTAMP, p_description)$$
+
 CREATE DEFINER=`selections`@`%` PROCEDURE `spInsert_score`(IN `p_criteriaId` INT, IN `p_applicant` VARCHAR(25), IN `p_sessionkey` VARCHAR(32), IN `p_score` DECIMAL(10,4))
-INSERT INTO  `selections`.`score` (
+INSERT INTO  `score` (
 `criteria_id` ,
 `applicant` ,
 `session_key` ,
@@ -112,13 +141,13 @@ INSERT INTO user
 CREATE DEFINER=`selections`@`%` PROCEDURE `spSession_create`(IN `session_key` VARCHAR(32), IN `username` VARCHAR(25), IN `password_md5` VARCHAR(32), IN `session_name` VARCHAR(25), IN `ip_address` VARCHAR(25))
 BEGIN
 	DECLARE result int DEFAULT -404;
-    IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+    IF EXISTS (SELECT 1 FROM `user` WHERE
 			`user`.`username` =username AND 
 			`user`.`password_md5`=password_md5 AND
             `user`.`enabled`= 1   
         ) then
         
-		INSERT INTO  `selections`.`sessions` (
+		INSERT INTO  `sessions` (
         `username`,
 		`session_key` ,
 		`last_active`,
@@ -132,7 +161,7 @@ BEGIN
         session_name,
        	ip_address
 		);
-        IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+        IF EXISTS (SELECT 1 FROM `user` WHERE
 			`user`.`username` =username AND 
             `user`.`admin`=1) then
             SET result = 1; #Valid. Admin
@@ -151,12 +180,12 @@ BEGIN
 	DECLARE username varchar(25);
             
 	#Check that the session exists and has not expired
-	IF EXISTS (SELECT 1 FROM `selections`.`sessions` WHERE  
-			`sessions`.`session_key` =session_key AND
+	IF EXISTS (SELECT 1 FROM `sessions` WHERE  
+			`session_key` =session_key AND
             `last_active` >= DATE_ADD(NOW(),INTERVAL -2 HOUR)
             ) THEN 
 			#Update session
-            UPDATE  `selections`.`sessions`
+            UPDATE  `sessions`
 			SET  `last_active` =  CURRENT_TIMESTAMP
 			WHERE  `sessions`.`session_key` =session_key;
 			
@@ -165,7 +194,7 @@ BEGIN
 			WHERE  sessions.session_key = session_key;
             #SELECT username;		
 			
-			IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+			IF EXISTS (SELECT 1 FROM `user` WHERE
 				`user`.`username` =username AND 
 				`user`.`admin`=1) then
 				SET result = 1; #Valid. Admin
@@ -173,7 +202,7 @@ BEGIN
 				SET result = 0; #Valid. Not-admin
 			END IF;
 
-			IF EXISTS (SELECT 1 FROM `selections`.`user` WHERE
+			IF EXISTS (SELECT 1 FROM `user` WHERE
 				`user`.`enabled` =0) then
 				SET result=-1;
 			END IF;
@@ -187,6 +216,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdate_applicant`(IN `p_applicant
     NO SQL
 UPDATE `selections`.`applicant` SET `app_group` = p_group
 WHERE `applicant`.`applicant_id` = p_applicantId$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdate_user`(IN `p_password` VARCHAR(32), IN `p_username` VARCHAR(25))
+    NO SQL
+UPDATE  `user` SET  `password_md5` =  p_password WHERE  `user`.`username` =p_username$$
 
 DELIMITER ;
 
@@ -203,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `applicant` (
   `gender` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `applicant_id` (`applicant_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=67 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=61 ;
 
 -- --------------------------------------------------------
 
@@ -221,7 +254,22 @@ CREATE TABLE IF NOT EXISTS `criteria` (
   `disabled` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `critera_name` (`criteria_name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `errors`
+--
+
+CREATE TABLE IF NOT EXISTS `errors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_key` varchar(32) NOT NULL,
+  `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `description` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `session_key` (`session_key`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -239,7 +287,7 @@ CREATE TABLE IF NOT EXISTS `score` (
   KEY `applicant` (`applicant`),
   KEY `reviewer` (`session_key`),
   KEY `criteria_id` (`criteria_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2065 ;
 
 -- --------------------------------------------------------
 
@@ -257,7 +305,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `session_key` (`session_key`),
   KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
 
 -- --------------------------------------------------------
 
@@ -273,11 +321,17 @@ CREATE TABLE IF NOT EXISTS `user` (
   `admin` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `errors`
+--
+ALTER TABLE `errors`
+  ADD CONSTRAINT `errors_ibfk_1` FOREIGN KEY (`session_key`) REFERENCES `sessions` (`session_key`);
 
 --
 -- Constraints for table `score`
