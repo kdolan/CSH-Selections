@@ -3,6 +3,7 @@ Computer Science House web application for managing the selections process.
 
 Web Framework: Bottle
 Database: MySQL
+Version: v1.0
 
 #Implementation
 The data access layer DAL provides access to the mysql database backend though stored procedures. This data is collected by the page controllers that then render the views.
