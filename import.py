@@ -20,9 +20,14 @@ if __name__ == "__main__":
     current_applicants = dbConn.get_allApplicants()
     imported_applicants = [d[0] for d in matrix] #get the application id for all rows in file
 
+    imported_applicants.pop(0) #pop header row
+
     new_applicants = list()
     update_applicants = list()
     notUpdated_applicants = list()
+
+    print(current_applicants)
+    print(imported_applicants)
 
     for applicant in imported_applicants:
         if applicant in current_applicants: #If the applicant already exists in the db
@@ -32,6 +37,7 @@ if __name__ == "__main__":
 
     for applicant in current_applicants:
         if applicant not in imported_applicants:
+            print applicant
             notUpdated_applicants.append(applicant)
 
     matrix.pop(0) #Pop off the header row of the csv
@@ -56,6 +62,6 @@ if __name__ == "__main__":
             print("Updating Existing Applicant: "+str(application_id))
 
     for applicant in notUpdated_applicants:
-        dbConn.update_applicant(application_id, 0) #Clear group
-        print("Clearing Group for Applicant: "+str(application_id))
+        dbConn.update_applicant(applicant, 0) #Clear group
+        print("Clearing Group for Applicant: "+str(applicant))
 

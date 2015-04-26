@@ -114,7 +114,7 @@ def get_download():
     if(access_level != 0 and access_level!=1):
         return "Authentication failed"
     application_id = request.query['application']
-    fileName = application_id+'.docx'
+    fileName = application_id+'.pdf'
     path = os.getcwd()+'/Applications/'
     return static_file(fileName, root=path)
 
