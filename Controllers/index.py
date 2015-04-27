@@ -25,7 +25,7 @@ def page_html(dbConn, http_request, http_response):
     apps_reviewed = dbConn.get_appsReviwedBySession(http_request.get_cookie("CSH-Selections"))
 
     if(len(applicant_groups)==0):
-        return "WARNING: There are currently no applicantions/groups. Selections is disabled."
+        return "WARNING: There are currently no applications/groups. Selections is disabled."
 
     group_options = _format_options(applicant_groups, group)
     print group_options
