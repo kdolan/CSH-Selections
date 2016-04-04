@@ -13,3 +13,12 @@ accountCreate - Creates a new user account.
 eval - Takes an application id, presents the application and the evaluation rubric.
 results - Generates spreadsheet with score of all applicants
 importApplications - Imports applications ids from .csv
+
+# Usage
+To start the web server:
+
+`python selections.py`
+
+To start the web server and change the password of the selections user:
+
+`python selections.py new_password`
