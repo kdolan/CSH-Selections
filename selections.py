@@ -173,4 +173,4 @@ if __name__ == "__main__":
         dbConn.update_user('selections', sys.argv[1])
 
     setup_routing()
-    run(host='129.21.253.209', port=80, debug=True)
+    run(host='selections.csh.rit.edu', port=9001, debug=True)
