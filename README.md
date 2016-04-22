@@ -24,10 +24,14 @@ To start the web server and change the password of the selections user:
 `python selections.py new_password`
 
 # Modules
-pip install bottle
-apt-get install libmysqlclient-dev #For MySQL-python
-apt-get install python2.7-dev #For MySQL-python
-pip install MySQL-python
+`pip install bottle`
+
+`apt-get install libmysqlclient-dev #For MySQL-python`
+
+`apt-get install python2.7-dev #For MySQL-python`
+
+`pip install MySQL-python`
+
 
 # Inital Setup
 Database Setup:
