@@ -2,17 +2,20 @@
 Computer Science House web application for managing the selections process.
 
 Web Framework: Bottle
+
 Database: MySQL
+
 Version: v1.0
 
-#Implementation
+
+# Implementation
 The data access layer DAL provides access to the mysql database backend though stored procedures. This data is collected by the page controllers that then render the views.
 
 # Pages
-accountCreate - Creates a new user account.
-eval - Takes an application id, presents the application and the evaluation rubric.
-results - Generates spreadsheet with score of all applicants
-importApplications - Imports applications ids from .csv
+- **accountCreate** - Creates a new user account.
+- **eval** - Takes an application id, presents the application and the evaluation rubric.
+- **results** - Generates spreadsheet with score of all applicants
+- **importApplications** - Imports applications ids from .csv
 
 # Usage
 To start the web server:
@@ -24,22 +27,18 @@ To start the web server and change the password of the selections user:
 `python selections.py new_password`
 
 # Modules
-`pip install bottle`
 
-`apt-get install libmysqlclient-dev #For MySQL-python`
-
-`apt-get install python2.7-dev #For MySQL-python`
-
-`pip install MySQL-python`
+`pip install -r requirements.txt`
 
 
 # Inital Setup
 Database Setup:
-1) Create an admin user
-2) Create a selections user or create indivudal accounts for all members of selections
-3) Import or set the criteria in the database. All criteira is data driven (It is trivial to change the rubric or how it works)
-4) Import applications and groups
-5) Upload the application pdfs so they can be downloaded. Application pdfs should be put in the Applications directory where the file name is {groupNumber}.pdf.
+1) Run the SQL dump to create an empty schema.
+2) Create an admin user in the `user` table.
+3) Create a selections user or create indivudal accounts for all members of selections
+4) Import or set the criteria in the database. All criteira is data driven (It is trivial to change the rubric or how it works)
+5) Import applications and groups.
+6) Upload the application pdfs so they can be downloaded. Application pdfs should be put in the Applications directory where the file name is {groupNumber}.pdf.
 
 Config Setup:
 1) Set the host and the port in selections.py
